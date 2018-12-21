@@ -1,47 +1,59 @@
 #include <Servo.h>
 
-//joystick IO
+// Joystick pin definitions
 const int analogX = A0;
 const int analogY = A1;
-//servo pins
+
+// Servo pin definitions
 const int clawPin = 9;
 const int basePin = 3;
 const int backFrontFinePin = 11;
 const int backFrontRoughPin = 10;
-//variables that take input from joystick and process it
+
+// dynamic values for joystick
 int xval = 0;
 int yval = 0;
 int basePos = 0;
 int armPos = 0;
-//servos
+
+// servos
 Servo claw;
 Servo base;
 Servo backFrontFine;
 Servo backFrontRough;
+
 void setup() {
-  //joystick pinmodes
+
+  // joystick pinmodes
+
   pinMode(analogX, INPUT);
   pinMode(analogY, INPUT);
-  //servo pinmodes
+
+  // servo pinmodes
   pinMode(clawPin, OUTPUT);
   pinMode(basePin, OUTPUT);
   pinMode(backFrontFinePin, OUTPUT);
   pinMode(backFrontRoughPin, OUTPUT);
-  //serial
+
+  // serial
   Serial.begin(9600);
-  //servo setup
+
+  // servo attachment to pins
   claw.attach(clawPin);
   base.attach(basePin);
   backFrontFine.attach(backFrontFinePin);
   backFrontRough.attach(backFrontRoughPin);
-  //do some voodoo here
+
+  // do some voodoo here
 }
 
 void loop() {
-  //read input from joystick
+
+  // read input from joystick
   xval = analogRead(analogX);
   yval = analogRead(analogY);
 
+  // base position is either 0, 90, or 180 degress based on x-coordinate of joystick
   if (xval <= 470) {
     basePos = 0;
   } else if (xval > 470 && xval < 530) {
@@ -50,6 +62,7 @@ void loop() {
     basePos = 180;
   }
 
+  // same with the backFrontRough servo, but with the y-coordinate insetad
   if (yval <= 470) {
     armPos = 0;
   } else if (yval > 470 && yval < 530) {
@@ -58,12 +71,14 @@ void loop() {
     armPos = 180;
   }
 
-  //mapping
+  //  writing to servos
   base.write(basePos);
   backFrontRough.write(armPos);
 
+  // debug prints
   Serial.println(xval);
   Serial.println(yval);
 
+  // rate control
   delay(50);
 }
